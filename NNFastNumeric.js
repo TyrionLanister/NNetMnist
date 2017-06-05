@@ -12,6 +12,7 @@ const  layers = [784,30,10];
 const epochs = 30;
 const batchSize = 10;
 const eta = 3.0;
+
 function zerosMatrixFast() {
     this.weights= new Array(2);
     this.biases = new Array(2);
@@ -19,14 +20,16 @@ function zerosMatrixFast() {
         this.weights[i-1] = numeric.rep([layers[i-1], layers[i]],0);
         this.biases[i-1]  = numeric.rep([layers[i]],0);
     }
-};
+}
 
 function sigmoid(input) {
     return numeric.div(1,numeric.add(1.0, numeric.exp(numeric.mul(-1,input))));
-};
+}
+
 function sigmoidDerivative(input) {
     return numeric.mul(sigmoid(input), numeric.sub(1.0,sigmoid(input)));
-};
+}
+
 function randomNormFast() {
     return Math.sqrt(-2 * Math.log(Math.random()))*Math.cos((2*Math.PI) * Math.random());
 }
@@ -36,8 +39,7 @@ function shuffle(data,label){
         j = parseInt(Math.random() * i), x = data[--i], data[i] = data[j], data[j] = x,
             x = label[i], label[i] = label[j], label[j] = x);
     return [data,label];
-};
-
+}
 
 function downloadData () {
     let  request = require("request");
@@ -84,6 +86,7 @@ function downloadData () {
     );
 
 }
+
 function  readData() {
     let fs = require('fs');
     let dataFileBuffer = fs.readFileSync('train-images-idx3-ubyte');
@@ -109,8 +112,8 @@ function  readData() {
         testLbl[image-50000] = labelFileBuffer[image + 8];
 
     }
+}
 
-};
 function initializeWeights(){
     this.weights = new Array(2);
     this.biases = new Array(2);
@@ -119,7 +122,6 @@ function initializeWeights(){
         this.biases[i-1] = numeric.rep( [1,layers[i]],0).map(rows => rows.map(randomNormFast));
     }
 }
-
 
 function feedforward ( data) {
     for(let i = 0;i <BWts.biases.length;i++){
@@ -132,8 +134,6 @@ function feedforward ( data) {
 function replicate(weight, rows) {
     return numeric.dot(numeric.rep([rows,1],1), weight);
 }
-
-
 
 function backprop(data, label, temp) {
     let activations = new Array(layers.length), zs = new Array(layers.length - 1);
@@ -148,7 +148,6 @@ function backprop(data, label, temp) {
         activations[i+1] = data;
     }
     // backward pass
-
     let delta = numeric.mul(numeric.sub(activations[activations.length -1] ,label),sigmoidDerivative(zs[zs.length-1]));
     temp.biases[BWts.biases.length -1 ] = numeric.dot(numeric.rep([1,Len],1),delta);
     temp.weights[BWts.weights.length -1 ] = numeric.dot(numeric.transpose(activations[activations.length -2 ]), delta) ;
@@ -159,6 +158,7 @@ function backprop(data, label, temp) {
         temp.weights[BWts.biases.length -layer ] =   numeric.dot(numeric.transpose(activations[activations.length -layer -1  ]) , delta);
     }
 }
+
 function sgdMiniBatch( data, label){
     let  temp = new zerosMatrixFast();
     backprop(data, label, temp);
@@ -167,6 +167,7 @@ function sgdMiniBatch( data, label){
         BWts.biases[i] =  numeric.sub(BWts.biases[i] , numeric.mul(eta/ batchSize, temp.biases[i]));
     }
 }
+
 // Call this method once and then comment
 //downloadData();
 var startTime = Date.now();
