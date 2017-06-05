@@ -125,8 +125,7 @@ function initializeWeights(){
 
 function feedforward ( data) {
     for(let i = 0;i <BWts.biases.length;i++){
-        data = numeric.add(numeric.dot(data , BWts.weights[i]), replicate(BWts.biases[i],data.length));
-        data  = sigmoid(data);
+        data  = sigmoid(numeric.add(numeric.dot(data , BWts.weights[i]), replicate(BWts.biases[i],data.length)));
     }
     return data;
 }
